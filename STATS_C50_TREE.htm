@@ -1,0 +1,245 @@
+<html>
+<head>
+<title>C5.0 Trees</title>
+<STYLE TYPE="text/css"> 
+<!-- 
+
+H1 {font-weight:bold; color:#006699; font-family:Verdana, Arial, sans-serif;font-size:125%; }
+H2 {font-weight:bold; color:#006699; font-family:Verdana, Arial, sans-serif;font-size:110%; }
+TABLE {font-size:100%;font-family:Verdana, Arial, sans-serif;}
+
+/* paragraph tags */
+.step {text-indent: -1.3em; margin-left:1.3em; margin-top: 0px;}
+.menuselection {margin-left:10px}
+.bullet {list-style-type: disc;margin-top:12px; margin-left:36px; text-indent:-1em; }
+.codeblock {background-color: #ffffe6; display:block; margin-left:5px; padding:5px;font-family:"courier new",monospace; }
+
+/* inline tags */
+.code {font-family: Courier,fixed pitch;}                           /*** used to tag pieces of code (syntax, Python, R, HTML, etc.)   ***/
+.screen {font-weight:bold; color:#408080}                       /*** used refer to on-screen text ***/
+.name {font-style: italic}                                                       /*** used to tag names, such as variable names, file names, and so forth ***/
+.runinhead {font-weight: bold} 
+.superscript {vertical-align:super; font-size:80%}
+.subscript {vertical-align:sub; font-size:80%}
+.symbol {font-family: Symbol}
+
+--> 
+</STYLE>
+</head>
+<body>
+<h1>C5.0 Tree</h1>
+<p>This procedure estimates a classification tree model
+using the C5.0 algorithm. The output can be a tree or
+a set of rules.  Missing data can be handled within the
+process.  The procedure can also do predictions
+for the estimation data or a new dataset using a saved
+model.  Boosting can be performed for increased accuracy.
+</p>
+<p>When predicting on new data, the model specification is taken from
+    a previous estimated model.  Do not enter model parameters in
+    that mode.  The Options and Costs subdialogs are only used
+    for estimation.  The Save and Output subdialogs have settings that
+    apply to both modes.
+</p>
+
+<p><span class="runinhead">Model Source</span> Choose whether to
+estimate a model or to make predictions using a previously estimated
+model.  A dataset name for the output must be specified in the Save subdialog if
+making predictions.<p>
+<p>
+</p>Specify the file containing the saved model workspace if predicting from
+a model file.  If using the retained workspace, the Save subdialog must
+have specified that the workspace should be retained, and no other R-based
+procedure may have been run since the model was estimated.  Only the most
+recently estimated model in the workspace is available for use in prediction
+</p>
+<p>Split files and the Statistics case weights are not supported by this procedure.</p>
+
+<p><span class="runinhead">Dependent</span> Select the
+dependent variable, which must be categorical.
+</p>
+
+<p><span class="runinhead">Independent</span> Specify
+the independent variables.  Categorical variables will
+be automatically treated as ordered or unordered factors
+according to the variable measurement levels.
+</p>
+
+<p><span class="runinhead">Case ID</span>
+Predictions are saved to a new dataset.
+Optionally specify a case ID variable, which will be named ID, to be included in the new dataset.
+</p>
+
+
+<p><span class="runinhead">Influence</span> This procedure
+does not use the Statistics case weight, but you can specify
+an influence or importance weight. The relative weight is the
+ratio of the weight to the average weight.  Missing or negative
+weights are given a weight of 1.  Influence weights are likely
+to be helpful for prediction only if cases with similar weights also
+have similar values of the independent variables.
+</p>
+
+<h2>Options</h2>
+<p><span class="runinhead">Cases with Missing Values</span> 
+Choose whether to include or omit such cases.  The tree building
+algorithm is capable of handling missing values appropriately.
+</p>
+
+<p><span class="runinhead">User Missing Values Treatment</span>
+Choose whether to treat user-missing values as valid values or
+as missing.  For scale variables, treating as valid would not make
+sense, but for categorical variables with multiple user missing codes,
+treating the values as valid would preserve the distinction.
+With a mixture of predictor variable types, it may be approriate
+to convert scale variable user missing values to system missing if
+using the Valid option, since system-missing values are always
+treated as missing.
+</p>
+
+<p><span class="runinhead">Categorical Variables</span> Categorical
+(nominal or ordinal) variables are automatically treated as factors.
+The factor levels can be based on the actual values of these variables
+or on the associated value labels.
+</p>
+
+<p><span class="runinhead">Use feature selection</span>
+The tree will be built using the most effective variables, so
+some variables may not appear in the result.  When there are
+many variables, prescreening them before building the tree
+may be useful.  Check this box  to use this feature.
+</p>
+<p><span class="runinhead">Number of boosting iterations</span>
+Specify the number of boosting iterations with a value of
+1 indicating a single model.
+</p>
+<p><span class="runinhead">Confidence Factor</span>
+Specify the confidence factor as a percentage.  It represents the
+confidence with which a prediction is made, but if boosting is
+used, it may not be the true accuracy of the rule.  If multiple
+rules apply, the outcome is determined by confidence-weighted voting.
+</p>
+
+<p><span class="runinhead">Minimum Size</span>
+At each branch point in the tree, at least this number
+of cases must follow at least two branches, however missing values
+and unequal costs can modify this behavior.
+</p>
+
+<p><span class="runinhead">Training Proportion</span>
+A random sample containing the specified proportion of the cases is used to construct the classifier. Then the classifier is evaluated on a non-overlapping set of test cases consisting of another sample of the same size as the training set (if the proportion is less than half), or, otherwise, all the
+non-training set cases.
+</p>
+
+<p><span class="runinhead">Random Number Seed</span>
+Specify a value if you want to be able to reproduce the exact
+results with the same data in a future run.
+</p>
+
+<h2>Output</h2>
+<p><span class="runinhead">Display tree or rules</span>
+Check this box to display the tree or rule set.
+</p>
+
+<p><span class="runinhead">Output Type</span>
+The output can be displayed as a description of the tree or
+as a set of rules. If rules are displayed, they can be
+ordered by their effect on the error rate and grouped into
+the number of bands specified.  The effect of each entire
+group can be seen this way.
+</p>
+
+<p><span class="runinhead">Display Variable Importance Table</span> 
+The independent variable importance is determined by the percentage of
+training set samples that fall into all the terminal nodes after the split
+(usage).  That is, it is the percentage of cases where the classification
+uses the variable at some point in the tree.  The splits column shows the percentage of splits that use each variable.
+</p>
+
+<p><span class="runinhead">Display cost matrix</span> Check this
+box to display the cost matrix.  If no cost matrix was specified,
+i.e., all misclassifications have the same cost, no table is produced.
+</p>
+
+<h2>Save</h2>
+<p><span class="runinhead">Prediction Dataset</span> 
+Specify a dataset name that is not already in use to contain the
+predicted values whether for the estimation data or for a new
+dataset where predictions are made from a previously estimated model.
+Predictions are made with the same level of boosting as was used
+in estimation if possible.
+</p>
+<p><span class="runinhead">Prediction Type</span> Predictions
+can be of the most likely class or can show the predicted probability of each
+class.  The probabilities are not available if a cost matrix was
+specified.
+</p>
+<p><span class="runinhead">Workspace</span> The workspace containing
+the estimated model can be saved in memory and can be written to a file.
+Specify Retain if you want to make predictions from the model
+using new data as a subsequent command in the same session.  Only the most recently
+estimated model is available, and no other R-based code should
+be run inbetween.
+</p>
+<p>You can save the workspace containing the model to a file
+for later use.  Specify that file in the Model Source group
+when making predictions for new data.
+</p>
+
+<h2>Costs</h2>
+<p>The cost matrix specifies the misclassification cost for each pair
+of predicted and true categories.  If no cost matrix is specified,
+all misclassification costs are assumed to be equal.  The rows of the
+matrix are the predicted categories, and the columns are the true
+categories.  Each element of the matrix is represented as a triple
+of the form
+row category, column category, cost.  The diagonal elements, which
+represent correct predictions, automatically have a cost of zero.
+All categories must be accounted for.
+</p>
+<p>Here is an example of a cost matrix.  It shows, for example,
+that predicting category C when the true category is A has a
+cost of 20.</p>
+<table border="1">
+<caption>A cost matrix</caption>
+<tr><th>Predicted</th><th colspan="3">Actual</tr>
+<tr><th></th><th>A</th><th>B</th><th>C</th></tr>
+<tr><th>A</th><td>0</td><td>5</td><td>10</td><tr>
+<tr><th>B</th><td>3</td><td>0</td><td>5</td><tr>
+<tr><th>C</th><td>20</td><td>5</td><td>0</td><tr>
+</table>
+<p>Enter the triples in the boxes below.  Multiple boxes are provided
+to facilitate entry, but these do not correspond to the rows and columns
+of the matrix.  Here is the specification for the example matrix.<br/>
+<span class="code">
+'A' 'B'=5  'A' 'C'=10 'B' 'A'=3 'B' 'C'=5 'C' 'A'=20 'C' 'B'=5
+</span>
+<p>String categories, as in this example, should be quoted.</p>
+
+<h2>Additional Features</h2>
+<p>
+This dialog generates syntax for the STATS C50 TREE extension command. To display syntax help for this command,
+run the following syntax:
+</p>
+<p class="codeblock">STATS C50 TREE /HELP.</p>
+<p>In Statistics version 23 or later, you can place the cursor within the command in the Syntax Editor and press F1.</p>
+
+<h2>Acknowledgements</h2>
+<p>This procedure uses the R C5.0 package by Max Kuhn, Steve Weston, Nathan Coulter, Mark Culp. The C code for C5.0 is by R. Quinlan.
+</p>
+<h2>References</h2>
+<p>Some details on definitions and computation can be found
+at http://www.rulequest.com/see5-win.html#EVALUATION, although this
+refers to some of the underlying code rather than this specific procedure.
+</p>
+
+<h2>Requirements</h2>
+This command requires the R Essentials and the R C5.0 package
+You can download the Essentials via the SPSS Community website at www.ibm.com/developerworks/spssdevcentral.
+</p>
+  <hr
+  <p style="font-family:Verdana, Arial, sans-serif;font-size:80%;">
+  © Copyright IBM Corp. 2015</p>
+</body>
+</html>
+

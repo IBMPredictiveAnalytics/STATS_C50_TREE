@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>STATS C50 TREE Extension Command</title>
+
+<link rel="stylesheet" type="text/css" href="extsyntax.css" />
+
+
+
+
+
+</head>
+
+<body>
+<!-- rmarkdown v1 -->
+
+<h1>STATS C50 TREE Extension Command</h1>
+
+<p>Estimate a classification tree model
+using the C5.0 algorithm or make predictions using
+the model</p>
+<div class="syntax">
+<p>STATS C50 TREE<br/>
+MODE = ESTIMATE<sup>&#42;&#42;</sup> or PREDICT<br/>
+USEWORKSPACE = NO<sup>&#42;&#42;</sup> or YES<br/>
+WORKSPACEFILE = &ldquo;file&rdquo;<br/>
+DEPENDENT = variable<br/>
+INDEPENDENT = variables<br/>
+ID = variable<br/>
+INFLUENCE = influence weight variable<br/>
+COSTS = cost matrix specification<br/>
+</p>
+
+<p>/OPTIONS<br/>
+FACTORCONVERSION = LEVELS<sup>&#42;&#42;</sup> or LABELS<br/>
+MISSING = INCLUDE<sup>&#42;&#42;</sup> or OMIT<br/>
+USERMISSINGVALID = NO<sup>&#42;&#42;</sup> 	or YES<br/> 
+BOOSTS = integer<br/>
+GROUPING = YES<sup>&#42;&#42;</sup> or NO<br/>
+FEATURESELECTION = NO<sup>&#42;&#42;</sup> or YES<br/>
+CONFIDENCE = confidence percentage<br/>
+MINSIZE = integer<br/>
+TRAINPROP = number<br/>
+RNSEED = integer<br/>
+</p>
+
+<p>/PRINT<br/>
+TREE = YES<sup>&#42;&#42;</sup> or NO<br/>
+RULES = NO<sup>&#42;&#42;</sup> or YES<br/>
+RULEBANDS = integer<sup>&#42;&#42;</sup><br/>
+COSTS = YES<sup>&#42;&#42;</sup> or NO<br/>
+VARIMPORTANCE = YES<sup>&#42;&#42;</sup> or NO<br/>
+
+<p>/SAVE<br/>
+DATASET = dataset<br/>
+WORKSPACEACTION = CLEAR<sup>&#42;&#42;</sup> or RETAIN<br/>
+WORKSPACEOUTFILE = &ldquo;file&rdquo;<br/>
+PREDTYPE = CLASS<sup>&#42;&#42;</sup> or PROB<br/>
+</p>
+
+<p>/HELP</p>
+
+<p><sup>&#42;</sup> Required<br/>
+<sup>&#42;&#42;</sup> Default</p>
+</div>
+<p>STATS C50 TREE /HELP displays this help and does nothing else.</p>
+
+<pre class="example"><code>
+STATS C50 TREE DEPENDENT=jobcat INDEPENDENT=gender minority salary
+/SAVE DATASET=results ID=id WORKSPACEOUTFILE=&quot;C:/myproject/jobmodel.Rdata&quot;.
+</code></pre>
+
+<p>This procedure does not use the Statistics WEIGHT variable (see below)
+and does not support split files.</p>
+
+<p>This command operates in two modes.  It can be used to estimate
+a model, which is the default, or it can be used with a model previously estimated
+and saved in memory or a file to make predictions for new data.</p>
+
+<p><strong>MODE</strong> specifies whether to estimate a
+model or use a previously estimated model to calculate predictions.  The choices are</p>
+
+<ul>
+<li><strong>ESTIMATE</strong>: estimate a model (and optionally predict)</li>
+<li><strong>PREDICT</strong>: predict using a previously estimated model
+</ul>
+
+<p><strong>USEWORKSPACE=YES</strong> indicates that a workspace
+kept using WORKSPACEACTION=RETAIN is the source of the model.<br/>
+<strong>WORKSPACEFILE</strong> specifies that the model source
+is a previously created model that was saved
+to a file with WORKSPACEFILE.
+</p>
+
+<p><strong>DEPENDENT</strong> specifies the dependent variable, which
+must be categorical.</p>
+
+<p><strong>INDEPENDENT</strong> specifies one or more independent variables
+</p>
+<p>DEPENDENT and INDEPENDENT are only used in estimate mode.  In predict
+mode, the model variable specification is taken from the saved model.
+</p>
+<p><strong>ID</strong> optionally names a variable to identify
+the cases if a prediction dataset is created.  In
+PREDICT mode, the ID specification comes from that command instance.</p>
+<p><strong>INFLUENCE</strong> optionally names an influence
+or importance weight variable.  
+The relative weight is the
+ratio of the weight to the average weight.  Missing or negative
+weights are given a weight of 1.  Influence weights are likely
+to be helpful for prediction only if cases with similar weights also
+have similar values of the independent variables.
+</p>
+<p>By default, all misclassifications are assumed to have the
+same cost. <strong>COSTS</strong> can be used to specify
+unequal costs.
+The cost matrix specifies the misclassification cost for each pair
+of predicted and true categories.  The rows of the
+matrix are the predicted categories, and the columns are the true
+categories.  Each element of the matrix is represented as a triple
+of the form
+row category, column category, cost.  The diagonal elements, which
+represent correct predictions, automatically have a cost of zero.
+All categories must be accounted for.
+</p>
+<p>Here is an example of a cost matrix.  It shows, for example,
+that predicting category C when the true category is A has a
+cost of 20.</p>
+<table border="1">
+<caption>A cost matrix</caption>
+<tr><th>Predicted</th><th colspan="3">Actual</tr>
+<tr><th></th><th>A</th><th>B</th><th>C</th></tr>
+<tr><th>A</th><td>0</td><td>5</td><td>10</td><tr>
+<tr><th>B</th><td>3</td><td>0</td><td>5</td><tr>
+<tr><th>C</th><td>20</td><td>5</td><td>0</td><tr>
+</table>
+<p>Here is the specification for the example matrix.<br/>
+<span class="code">
+COSTS = 'A' 'B'=5  'A' 'C'=10 'B' 'A'=3 'B' 'C'=5 'C' 'A'=20 'C' 'B'=5
+</span>
+<p>String categories, as in this example, should be quoted.
+The = are optional but improve readability of the syntax.</p>
+
+<h2>OPTIONS</h2>
+
+<p><strong>MISSING</strong> Choose whether to include or omit cases with any missing values.  The tree building algorithm is capable of handling missing values appropriately.
+</p>
+<p><strong>USERMISSINGVALID</strong> Choose whether to treat user-missing values as valid values or
+as missing.  For scale variables, treating as valid would not make
+sense, but for categorical variables with multiple user missing codes,
+treating the values as valid would preserve the distinction.
+With a mixture of predictor variable types, it may be approriate
+to convert scale variable user missing values to system missing if
+using the valid option, since system-missing values are always
+treated as missing.
+</p>
+<p><strong>FACTORCONVERSION</strong> Categorical
+(nominal or ordinal) variables are automatically treated as factors.
+The factor levels can be based on the actual values of these variables
+or on the associated value labels.
+</p>
+<p><strong>BOOSTS</strong> specifies the number of boosting iterations with a value of 1, which is the default, indicating a single model.
+</p>
+<p><strong>GROUPING</strong> Indicates whether the model building
+should evaluate groups of discrete predictors for splits.
+</p>
+<p><strong>FEATURESELECTION</strong> The tree will be built using the most effective variables, so some variables may not appear in the result.  
+When there are 
+many variables, prescreening them before building the tree
+may be useful.
+</p>
+<p><strong>CONFIDENCE</strong> Specify the confidence factor as a percentage.  It represents the
+confidence with which a prediction is made, but if boosting is
+used, it may not be the true accuracy of the rule.  If multiple
+rules apply, the outcome is determined by confidence-weighted voting.
+The default value is 25%.
+</p>
+<p><strong>MINSIZE</strong> At each branch point in the tree, at least this number
+of cases must follow at least two branches, however missing values
+and unequal costs can modify this behavior.  The default value is 2.
+</p>
+<p><strong>TRAINPROP</strong> 
+A random sample containing the specified proportion of the cases is used to construct the classifier. Then the classifier is evaluated on a non-overlapping set of test cases consisting of another sample of the same size as the training set (if the proportion is less than half), or, otherwise, all the
+non-training set cases.  By default, all cases are used for training.
+</p>
+<p><strong>RNSEED</strong> 
+Specify an integer value if you want to be able to reproduce the exact
+results with the same data in a future run.
+</p>
+<h2>PRINT</h2>
+<p><strong>TREE</strong>, <strong>COSTMATRIX</strong>, and <strong>VARIMPORTANCE</strong> specify whether these outputs are displayed.
+</p>
+<p><strong>RULES</strong> specifies whether the tree or the
+equivalent set of classification rules should be displayed.
+</p>
+<p><strong>RULEBANDS</strong> If rules are displayed, they can be
+ordered by their effect on the error rate and grouped into
+the number of bands specified.  The effect of each entire
+group can be seen this way.  The default is 1.
+</p>
+
+<h2>SAVE</h2>
+
+<p><strong>DATASET</strong> specifies the output dataset name.  The name
+must not already be in use.  Predictions can be made for the
+estimation data in ESTIMATE mode and for new data in PREDICT mode.</p>
+
+<p><strong>PREDTYPE</strong> specifies the type of prediction output.
+Predictions
+can be of the most likely class or can show the predicted probability of each
+class.  The probabilities are not available if a cost matrix was
+specified.
+</p>
+
+<p><strong>WORKSPACEACTION</strong> specifies whether to clear the
+in-memory workspace after the procedure (CLEAR) or
+to retain it for following prediction calculations.</p>
+
+<p><strong>WORKSPACEOUTFILE</strong> specifies whether to save the
+estimated model to a file.  It can be used in either ESTIMATE or
+PREDICT mode.</p>
+
+
+<p>&copy; Copyright IBM Corp. 1989, 2015</p>
+
+</body>
+
+</html>
+
