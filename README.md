@@ -6,7 +6,7 @@ This procedure estimates a classification tree model using the C5.0 algorithm. T
 ---
 Requirements
 ----
-- IBM SPSS Statistics 18 or later
+- IBM SPSS Statistics 18 or later and the corresponding IBM SPSS Statistics-Integration Plug-in for R.
 
 ---
 Installation intructions
