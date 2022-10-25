@@ -11,7 +11,7 @@ Description: This procedure estimates a classification tree model usin
  o predictions for the estimation data or a new dataset using a saved
  model. Boosting can be performed for increased accuracy.
 Author: JKP, IBM SPSS
-Version: 1.0.2
+Version: 1.0.3
 Product-Version: 18
 Date: 7/22/2015
 Categories: SPSS statistics tree C5.0
